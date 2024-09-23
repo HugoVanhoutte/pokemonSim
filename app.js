@@ -6,9 +6,8 @@ const Pokemon = class {
         this.defense = defense;
         this.ability = ability;
     }
-    attack = (target) => {
-        target.hp -= (this.attack - target.defense)
-        //TODO gerer heal
+    useAttack = (target) => {
+        target.defense >= this.attack ? console.log(target.name, " ne subit aucun dégât") : target.hp -= (this.attack - target.defense)
     }
     
     useAbility = (target) => {
@@ -16,7 +15,13 @@ const Pokemon = class {
     }
     
     displayStats = () => {
-        console.log()
+        console.log(
+            `
+            Nom: ${this.name},
+            PDV: ${this.hp},
+            Attaque: ${this.attack},
+            Défense: ${this.defense}`,
+        )
     }
     
     isKO = () => {
@@ -36,8 +41,13 @@ const Trainer = class {
     this.pokemons.push(pokemon)
     }
 
-    chosePokemon = (pokemonIndex) => {
-        return this.pokemons[pokemonIndex].isKO() ? false : this.pokemons[pokemonIndex]
+     chosePokemon = (pokemonIndex) => {
+    //     if (this.pokemons[pokemonIndex].isKO) {
+    //         console.log("Ce pokémon est KO")
+    //     } else {
+    //         return this.pokemons[pokemonIndex]
+    //     }
+        return this.pokemons[pokemonIndex].isKO() ? console.log("Ce pokemon est KO") : this.pokemons[pokemonIndex]
     }
 
     addItem = (item) => {
@@ -58,9 +68,9 @@ const Trainer = class {
 const Item = class {
     constructor(name, effect) {
         this.name = name;
-        this.effect = effect()
+        this.effect = effect;
     }
-    useItem = (pokemon) => this.effect(pokemon)
+    useItem = (target) => this.effect(target)
 }
 
 const Ability  = class {
@@ -69,25 +79,26 @@ const Ability  = class {
         this.damageMultiplier = damageMultiplier;
     }
 }
-
-const heal = (target, amount) => {
-    target.hp += amount
-}
-
-const boost = (target, stat, amount) => {
-    target.stat += amount
-}
-
 const Bolt = new Ability("Bolt", 3)
 const Surf = new Ability("Surf", 2)
 
 
 const Pikachu = new Pokemon("Pikachu", 100, 30, 20, Bolt)
 const Mudkip = new Pokemon("Mudkip", 120, 25, 25, Surf)
+const Mudkip2 = new Pokemon("Mudkip", 120, 25, 25, Surf)
 
-const potion = new Item("potion", heal)
-const attackBoost = new Item("attack +", boost)
-const defenseBoost = new Item("defense +", boost)
+const potion = new Item("potion", (target) => {target.hp += 10})
+const potion2 = new Item("potion", (target) => {target.hp += 10})
+const potion3 = new Item("potion", (target) => {target.hp += 10})
 
-const player = new Trainer('Red', [Pikachu, Mudkip], [potion, potion, attackBoost])
-const enemyTrainer = new Trainer('Blue', [Mudkip], [potion, defenseBoost])
+const attackBoost = new Item("attack +", (target) => {target.attack += 10})
+const defenseBoost = new Item("defense +", (target) => {target.defense += 10})
+
+const player = new Trainer('Red', [Pikachu, Mudkip], [potion, potion2, attackBoost])
+const enemyTrainer = new Trainer('Blue', [Mudkip2], [potion3, defenseBoost])
+
+Pikachu.useAttack(Mudkip2)
+Mudkip2.displayStats()
+
+Mudkip2.useAbility(Pikachu)
+Pikachu.displayStats()
